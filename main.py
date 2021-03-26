@@ -3,13 +3,20 @@ from Human import Human
 from Player import Player
 
 import tkinter as tk
-
 import pygame
 import pygame_menu
 import time
 import colors
 import Connect4 as cFour
 
+
+def text_format(option, textSize, textColor):
+    """
+    Creates a text object to show in the main menu
+    """
+    newFont = pygame.font.Font(pygame_menu.font.FONT_FRANCHISE, textSize)
+    newText = newFont.render(option, 0, textColor)
+    return newText
 
 def load_screen():
     """
@@ -19,12 +26,12 @@ def load_screen():
     pygame.display.set_caption("Connect4")
     return screen
 
-def get_players():
+def get_player_details(screen):
     """
-    Creates a tkinter object that gets players names
+    Creates a tkinter object(button) that gets players names
     """
     root = tk.Tk()
-    root.title("Names")
+    root.title("Player Names!")
 
     tk.Label(root, text="Player One", fg="blue").grid(row=0)
     tk.Label(root, text="Player Two", fg="red").grid(row=1)
@@ -35,68 +42,65 @@ def get_players():
     p1.grid(row=0, column=1)
     p2.grid(row=1, column=1)
 
-    tk.Button(root, text='Play!', command= lambda: play_game(p1.get(),p2.get(), root) ).grid(row=10, column=1, sticky=tk.W)
+    tk.Button(root, text='Play!', command= lambda: play_game(p1.get(),p2.get(), root, screen)).grid(row=10, column=1, sticky=tk.W)
     tk.mainloop()
     
-def play_game(p1Name, p2Name, root):
+def play_game(p1Name, p2Name, root, screen):
     """
-    Calling the connect4 object that enables 1v1 play
+    Connect4 play function (human v human)
     """
     root.destroy()
-    game = cFour.Connect4(Human(p1Name.strip()), Human(p2Name.strip())).play()
-    
-# def playAI(colorChoice, userName, master):
-#     """
-#     Calling the connect4 object that enables 1vAI play: 
-#     """
-#     master.destroy()
-
-#     if colorChoice == "BLUE(Player 1)":
-#         cFour.Connect4(userName, "Ed", True).playAi()
-#     else:
-#         cFour.Connect4("Ed", userName, True).playAi()
-
-# def displayAIPanel():
-#     """
-#     Creating the panel to allow the user to select a color and go against the AI
-#     """
-#     master = tk.Tk()
-
-#     colorChoice= tk.StringVar(master)
-#     colorChoice.set("Color to play as")
-
-#     tk.OptionMenu(master, colorChoice, "BLUE(Player 1)", "RED(Player 2)").grid()
-
-#     tk.Label(text="Name").grid(row=3)
-#     p1 = tk.Entry(master, font=(None, 15))
-#     p1.grid(row=3, column=1)
-
-#     tk.Button(master, text="PLAY COMPUTER!!!!", command=lambda: playAI(colorChoice.get(), p1.get(), master)).grid(row=4, column=1)
-    
-#     tk.mainloop()
+    game = cFour.Connect4(Human(p1Name.strip()), Human(p2Name.strip()), screen).play()
 
 if __name__ == "__main__":
-
     pygame.init()
     screen = load_screen()
 
-    theme = pygame_menu.themes.Theme(
-        title_font_shadow=True,
-        widget_padding=25,
-        title_bar_style=pygame_menu.widgets.MENUBAR_STYLE_ADAPTIVE,
-        widget_font=pygame_menu.font.FONT_FRANCHISE,
-        title_background_color = (255, 255, 0),
-        title_font_color = (0, 0, 255),
-        title_font_shadow_color = (255, 0, 0),
-        title_font_size = 80,
-        background_color = (135,206,250),
-        widget_font_color = (0, 0, 255),
-        widget_font_size = 80
-    )
+    features = [
+        ("Player Vs Player", colors.yellow),
+        ("Player Vs AI", colors.red),
+        ("Quit", colors.gray)
+    ]
 
-    menu = pygame_menu.Menu('Connect4',600, 600, theme=theme)
-                        
-    menu.add.button('Human v Human', get_players, selection_color=(255, 255, 0))
-    # menu.add.button('Human v AI', get_users, selection_color=(255,0,0))
-    menu.add.button('Quit', pygame_menu.events.EXIT, selection_color=(128,128,128))
-    menu.mainloop(screen)
+    iterator = 0
+    menu = True
+    while menu:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+
+            #This if block makes it where the user doesnt have to click arrow key up/down if they have exhausted the possible options, it will loop you throughout options
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_DOWN:
+                    iterator += 1
+                    if iterator == len(features):
+                        iterator = 0
+
+                if event.key == pygame.K_UP:
+                    iterator -= 1
+                    if iterator < 0:
+                        iterator = len(features) - 1
+
+                if event.key == pygame.K_RETURN:
+                    if selected == "Player Vs Player":
+                        get_player_details(screen)
+                    if selected == "Player Vs AI":
+                        displayAIPanel()
+                    if selected == "Quit":
+                        pygame.quit()
+                        quit()
+            selected = features[iterator][0]
+                
+        screen.fill(colors.blue)
+        screen_rect = screen.get_rect()
+        for i in range(0, len(features)):
+            counter = -50 + (i * 90) # Equation that sets distance between each choice in main menu
+            if i == iterator:
+                text = text_format(features[i][0], 80, features[i][1])
+            else:
+                text = text_format(features[i][0], 80, colors.black)
+            player_rect = text.get_rect(center=screen_rect.center)
+            player_rect[1] = player_rect[1] + counter
+            screen.blit(text, player_rect)    
+        pygame.display.update()
