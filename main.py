@@ -1,5 +1,3 @@
-from Computer import Computer
-from Human import Human
 from Player import Player
 
 import tkinter as tk
@@ -45,12 +43,46 @@ def get_player_details(screen):
     tk.Button(root, text='Play!', command= lambda: play_game(p1.get(),p2.get(), root, screen)).grid(row=10, column=1, sticky=tk.W)
     tk.mainloop()
     
+def get_player_ai_details(screen):
+    """
+    Creating the panel to allow the user to select a color and go against the AI
+    """
+    options = ["Player 1", "Player 2"]
+    root = tk.Tk()
+    root.title("Player 1(Blue) or 2(Red)?")
+
+    colorChoice= tk.StringVar(root)
+    colorChoice.set(options[0])
+
+    tk.OptionMenu(root, colorChoice, *options).grid(row=3)
+
+    p1 = tk.Entry(root, font=(None, 15))
+    p1.grid(row=3, column=1)
+
+    tk.Button(root, text="Play Computer!", command=lambda: play_computer(colorChoice.get(), p1.get(), root, screen)).grid(row=10, column=1)
+    
+    tk.mainloop()
+
+def play_computer(colorChoice, playerName, root, screen):
+    """
+    Connect4 play function (human v computer)
+    """
+    root.destroy()
+
+    # if colorChoice == "BLUE(Player 1)":
+    #     cFour.Connect4(userName, "Ed").playAi()
+    # else:
+    #     cFour.Connect4("Ed", userName).playAi()
+
+    print("Choice", colorChoice)
+    print("Name", playerName)
+    
 def play_game(p1Name, p2Name, root, screen):
     """
     Connect4 play function (human v human)
     """
     root.destroy()
-    game = cFour.Connect4(Human(p1Name.strip()), Human(p2Name.strip()), screen).play()
+    game = cFour.Connect4(Player(p1Name.strip()), Player(p2Name.strip()), screen).play()
 
 if __name__ == "__main__":
     pygame.init()
@@ -86,7 +118,7 @@ if __name__ == "__main__":
                     if selected == "Player Vs Player":
                         get_player_details(screen)
                     if selected == "Player Vs AI":
-                        displayAIPanel()
+                        get_player_ai_details(screen)
                     if selected == "Quit":
                         pygame.quit()
                         quit()
