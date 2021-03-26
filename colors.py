@@ -1,20 +1,16 @@
 """
 Valid colors to use got it from this link : https://python-forum.io/Thread-PyGame-PyGame-Colors
 """
-
+realBlue = (0,0,255)
 white = (255,255,255)
-blue = (0,0,255)
 green = (0,255,0)
-red = (255,0,0)
 black = (0,0,0)
 orange = (255,100,10)
-yellow = (255,255,0)
 blue_green = (0,255,170)
 marroon = (115,0,0)
 lime = (180,255,100)
 pink = (255,100,180)
 purple = (240,0,255)
-gray = (127,127,127)
 magenta = (255,0,230)
 brown = (100,40,0)
 forest_green = (0,50,0)
@@ -30,4 +26,11 @@ coffee_brown = (200,190,140)
 moon_glow = (235, 245, 255)
 burlywood = (255, 211, 155)
 salmon = (139, 76, 57)
-aquamarine = (127,255,212)
+aquamarine = (127, 255, 212)
+
+
+#Colors used for menu
+blue = (135, 206, 250)
+yellow = (255, 255, 0)
+red = (255,0,0)
+gray = (128, 128, 128)
