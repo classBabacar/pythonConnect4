@@ -51,7 +51,7 @@ class Connect4:
             for column in range(0, self.COLUMNS)
         ] 
 
-    def whoWon(self, board, piece):
+    def who_won(self, board, piece):
         """
         Determines the state of the game and finds if there is a winner
         """
@@ -82,15 +82,15 @@ class Connect4:
         # A winning move is not found
         return False
 
-    def legalMove(self, position):
+    def is_legal_move(self, position, board):
         """
         Validates if a move is available/legal
         """
-        if self.board[0][position] == self.EMPTY:
+        if board[0][position] == self.EMPTY:
             return True
         return False
 
-    def displayBoard(self):
+    def display_board(self):
         """
         Displaying the game board to the user
         """
@@ -119,11 +119,11 @@ class Connect4:
         This is the game-loop
         """
         while not self.gameOver:
-            self.displayBoard()
+            self.display_board()
             if self.moveNumber % 2 == 0:
-                userText, userRect = self.displayName(self.player1.name, colors.realBlue)
+                userText, userRect = self.display_player_name(self.player1.name, colors.realBlue)
             elif self.moveNumber % 2 == 1:
-                userText, userRect = self.displayName(self.player2.name, colors.red)
+                userText, userRect = self.display_player_name(self.player2.name, colors.red)
             self.screen.blit(userText, userRect) 
 
             for event in pygame.event.get():
@@ -132,36 +132,36 @@ class Connect4:
                     self.gameOver = True 
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     x, y = pygame.mouse.get_pos()
-                    position = self.getColumnPosition(x)
+                    position = self.get_column_position(x)
                     if self.moveNumber % 2 == 0 and position != self.EMPTY:
-                        if self.legalMove(position):                            
-                            self.dropPiece(position)
-                            if self.whoWon(self.board, 0):
+                        if self.is_legal_move(position, self.board):                            
+                            self.drop_piece_animation(position)
+                            if self.who_won(self.board, 0):
                                 self.gameOver = True
                                 self.scoreboard[self.player1.name] = self.scoreboard.get(self.player1.name) + 1
-                                userText, userRect = self.displayName(self.player1.name + " " + "Wins!!!", colors.dark_gray)
-                            elif self.checkTie(self.board):
+                                userText, userRect = self.display_player_name(self.player1.name + " " + "Wins!!!", colors.dark_gray)
+                            elif self.check_if_tie(self.board):
                                 self.gameOver = True
                                 self.scoreboard["ties"] = self.scoreboard.get("ties") + 1
-                                userText, userRect = self.displayName("It is a TIE!!!", colors.dark_gray)
+                                userText, userRect = self.display_player_name("It is a TIE!!!", colors.dark_gray)
 
                     elif self.moveNumber % 2 == 1 and position != self.EMPTY:
-                        if self.legalMove(position):                            
-                            self.dropPiece(position)
-                            if self.whoWon(self.board, 1):
+                        if self.is_legal_move(position, self.board):                            
+                            self.drop_piece_animation(position)
+                            if self.who_won(self.board, 1):
                                 self.gameOver = True
                                 self.scoreboard[self.player2.name] = self.scoreboard.get(self.player2.name) + 1
-                                userText, userRect = self.displayName(self.player2.name + " " + "Wins!!!", colors.dark_gray)
-                            elif self.checkTie(self.board):
+                                userText, userRect = self.display_player_name(self.player2.name + " " + "Wins!!!", colors.dark_gray)
+                            elif self.check_if_tie(self.board):
                                 self.gameOver = True
                                 self.scoreboard["ties"] = self.scoreboard.get("ties") + 1
-                                userText, userRect = self.displayName("It is a TIE!!!", colors.dark_gray)
-        self.displayBoard()
+                                userText, userRect = self.display_player_name("It is a TIE!!!", colors.dark_gray)
+        self.display_board()
         self.screen.blit(userText, userRect) 
         pygame.display.flip()
-        self.displayScore(False)
+        self.display_scoreboard(False)
             
-    def displayScore(self, isAi):
+    def display_scoreboard(self, isAi):
         """
         This enables the tkinter object so I can display the user options after : Victory/Loss/Tie
         """
@@ -185,7 +185,7 @@ class Connect4:
         tk.Entry(self.root)
         self.root.mainloop()
     
-    def checkTie(self, board):
+    def check_if_tie(self, board):
         """
         A possible game state : Checking for a tie
         """
@@ -199,7 +199,7 @@ class Connect4:
         else:
             return False
 
-    def displayName(self, name, color):
+    def display_player_name(self, name, color):
         """
         A feature to help users know who's turn it is that gets displayed
         """
@@ -209,7 +209,7 @@ class Connect4:
         textRect.center = (len(name) * 30, 20)
         return text, textRect
 
-    def dropPiece(self, position):
+    def drop_piece_animation(self, position):
         """
         Inserting a piece at a given position with the animation of a piece drop
         """
@@ -219,7 +219,7 @@ class Connect4:
 
         for i in range(0, tmpRow + 1):
             self.board[i][position] = self.moveNumber % 2
-            self.displayBoard()
+            self.display_board()
             pygame.time.delay(200)
             pygame.display.flip()
             self.board[i][position] = self.EMPTY
@@ -227,7 +227,7 @@ class Connect4:
         self.board[tmpRow][position] = self.moveNumber % 2
         self.moveNumber += 1
 
-    def getColumnPosition(self, position):
+    def get_column_position(self, position):
         """
         Takes a X coordinate value dependent on a click and determines what column user clicked
         """
@@ -245,4 +245,68 @@ class Connect4:
         self.moveNumber = 0
         self.board = [[self.EMPTY for x in range(self.COLUMNS)] for y in range(self.ROWS)]
         self.gameOver = False
+    
+    def play_computer(self):
+        """
+        This is the game-loop used for AI play
+        """
+        # If/else block to distinguish the human/Ai because the ai cant mouse click events
+        if self.player1.name == "Ed": # Ed Watkins (Staten Island)
+            humanPlayer = 1
+            computerPlayer = 0
+
+            humanName = self.player2.name
+            computerName = self.player1.name
+
+        elif self.player2.name == "Ed":
+            humanPlayer = 0
+            computerPlayer = 1
+
+            humanName = self.player1.name
+            computerName = self.player2.name
+            
+        while not self.gameOver:
+            self.display_board()
+            if self.moveNumber % 2 == 0:
+                userText, userRect = self.display_player_name(self.player1.name, colors.blue)
+            elif self.moveNumber % 2 == 1:
+                userText, userRect = self.display_player_name(self.player2.name, colors.red)
+            self.screen.blit(userText, userRect) 
+
+            for event in pygame.event.get():
+                self.screen.fill(colors.aquamarine) # Set up background color
+                if event.type == pygame.QUIT: 
+                    self.gameOver = True 
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    x, y = pygame.mouse.get_pos()
+                    position = self.get_column_position(x)
+                    if self.moveNumber % 2 == humanPlayer and position != self.EMPTY:
+                        if self.is_legal_move(position, self.board):                            
+                            self.drop_piece_animation(position)
+                            if self.who_won(self.board, humanPlayer):
+                                self.gameOver = True
+                                self.scoreboard[humanName] = self.scoreboard.get(humanName) + 1
+                                userText, userRect = self.display_player_name(humanName + " " + "Wins!!!", colors.dark_gray)
+                            elif self.check_if_tie(self.board):
+                                self.gameOver = True
+                                self.scoreboard["ties"] = self.scoreboard.get("ties") + 1
+                                userText, userRect = self.display_player_name("It is a TIE!!!", colors.dark_gray)
+            
+            if self.moveNumber % 2 == computerPlayer and self.gameOver == False:
+                # move =  # Insert move algorithm here...TO BE CONTINUED
+                move = self.generateMove()
+                self.drop_piece_animation(move)
+                if self.who_won(self.board, computerPlayer):
+                    self.gameOver = True
+                    self.scoreboard[computerName] = self.scoreboard.get(computerName) + 1
+                    userText, userRect = self.display_player_name(computerName + " " + "Wins!!!", colors.dark_gray)
+                elif self.check_if_tie(self.board):
+                    self.gameOver = True
+                    self.scoreboard["ties"] = self.scoreboard.get("ties") + 1
+                    userText, userRect = self.display_player_name("It is a TIE!!!", colors.dark_gray)
+
+        self.display_board()
+        self.screen.blit(userText, userRect) 
+        pygame.display.flip()
+        # self.display_scoreboard(True)
     
