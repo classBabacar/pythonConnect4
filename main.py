@@ -6,6 +6,7 @@ import pygame_menu
 import time
 import colors
 import Connect4 as cFour
+import Minimax as mx
 
 
 def text_format(option, textSize, textColor):
@@ -69,13 +70,10 @@ def play_computer(colorChoice, playerName, root, screen):
     """
     root.destroy()
 
-    # if colorChoice == "BLUE(Player 1)":
-    #     cFour.Connect4(userName, "Ed").playAi()
-    # else:
-    #     cFour.Connect4("Ed", userName).playAi()
-
-    print("Choice", colorChoice)
-    print("Name", playerName)
+    if colorChoice == "Player 1":
+        mx.Minimax(Player(playerName), Player("Ed"), screen).play_computer()
+    else:
+        mx.Minimax(Player("Ed"), Player(playerName), screen).play_computer()
     
 def play_game(p1Name, p2Name, root, screen):
     """
