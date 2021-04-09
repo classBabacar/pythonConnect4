@@ -41,7 +41,7 @@ class Minimax(Connect4):
                 tmpBoard = self.copyBoard(board)
                 if self.is_legal_move(move, tmpBoard):
                     self.drop_piece_computer(move, tmpBoard, moveNumber)
-                    result = self.generate_move(tmpBoard, depth - 1, humanPlayer, humanPlayer, True, moveNumber + 1)
+                    result = self.generate_move(tmpBoard, depth - 1, computerPlayer, humanPlayer, True, moveNumber + 1)
                     if result <= minValue:
                         minValue = result
                         thismove = move
@@ -70,9 +70,9 @@ class Minimax(Connect4):
     def get_game_score(self, board, computerPlayer, humanPlayer):
         totalScore = 0
         totalScore += self.get_hori_score(board, computerPlayer, humanPlayer)
-        # totalScore += self.get_vert_score(board, computerPlayer, humanPlayer)
-        # totalScore += self.get_upright_score(board, computerPlayer, humanPlayer)
-        # totalScore += self.get_upleft_score(board, computerPlayer, humanPlayer)
+        totalScore += self.get_vert_score(board, computerPlayer, humanPlayer)
+        totalScore += self.get_upright_score(board, computerPlayer, humanPlayer)
+        totalScore += self.get_upleft_score(board, computerPlayer, humanPlayer)
 
         return totalScore
 
@@ -87,8 +87,8 @@ class Minimax(Connect4):
                 groupingFourList.append(board[row][col + 2])
                 groupingFourList.append(board[row][col + 3])
 
-                computerPieces = self.count_player_pieces(groupingFourList, 1)
-                humanPieces = self.count_player_pieces(groupingFourList, 0)
+                computerPieces = self.count_player_pieces(groupingFourList, computerPlayer)
+                humanPieces = self.count_player_pieces(groupingFourList, humanPlayer)
                 emptyPieces = self.count_player_pieces(groupingFourList, self.EMPTY)
 
                 score += self.score_metric(computerPieces, humanPieces, emptyPieces)
@@ -107,8 +107,8 @@ class Minimax(Connect4):
                 groupingFourList.append(board[row - 2][col + 2])
                 groupingFourList.append(board[row - 3][col + 3])
 
-                computerPieces = self.count_player_pieces(groupingFourList, 1)
-                humanPieces = self.count_player_pieces(groupingFourList, 0)
+                computerPieces = self.count_player_pieces(groupingFourList, computerPlayer)
+                humanPieces = self.count_player_pieces(groupingFourList, humanPlayer)
                 emptyPieces = self.count_player_pieces(groupingFourList, self.EMPTY)
 
                 score += self.score_metric(computerPieces, humanPieces, emptyPieces)
@@ -127,7 +127,7 @@ class Minimax(Connect4):
                 groupingFourList.append(board[row - 2][col - 2])
                 groupingFourList.append(board[row - 3][col - 3])
 
-                computerPieces = self.count_player_pieces(groupingFourList, 1)
+                computerPieces = self.count_player_pieces(groupingFourList, computerPlayer)
                 humanPieces = self.count_player_pieces(groupingFourList, humanPlayer)
                 emptyPieces = self.count_player_pieces(groupingFourList, self.EMPTY)
 
@@ -170,13 +170,13 @@ class Minimax(Connect4):
 
         # Making bot prioritize playing defense than offense
         # Thats why the score is lower when regarding the enemy: AI chooses highest scoring move
-        if (computerPieces == 4):
-            score += 100
+        if (computerPieces == 2 and emptyPieces == 2):
+            score += 30
         elif (computerPieces == 3 and emptyPieces == 1):
-            score += 20
-        elif (computerPieces == 2 and emptyPieces == 2):
-            score += 10
-        if (humanPieces == 3 and emptyPieces == 1):
-            score -= 100
+            score += 60
+        if (humanPieces == 2 and emptyPieces == 2):
+            score -= 40
+        elif (humanPieces == 3 and emptyPieces == 1):
+            score -= 70
 
         return score
