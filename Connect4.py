@@ -2,6 +2,8 @@ import pygame
 import colors
 import tkinter as tk
 import pygame_menu
+# import pandas as pd
+import random
 
 class Connect4:
     """
@@ -291,10 +293,8 @@ class Connect4:
                                 self.gameOver = True
                                 self.scoreboard["ties"] = self.scoreboard.get("ties") + 1
                                 userText, userRect = self.display_player_name("It is a TIE!!!", colors.dark_gray)
-            
             if self.moveNumber % 2 == computerPlayer and self.gameOver == False:
-                # move =  # Insert move algorithm here...TO BE CONTINUED
-                move = self.generateMove()
+                move = self.generate_move(self.board, 4, computerPlayer, humanPlayer, True, self.moveNumber)
                 self.drop_piece_animation(move)
                 if self.who_won(self.board, computerPlayer):
                     self.gameOver = True
