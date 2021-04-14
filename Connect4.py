@@ -177,12 +177,12 @@ class Connect4:
         tk.Label(self.root, text=self.player2.name + ": " + str(self.scoreboard.get(self.player2.name)), font=(None, 15), anchor='w', justify='left').grid(row=2, column=1, sticky="NSEW")
         tk.Label(self.root, text="Ties: " + str(self.scoreboard.get("ties")), font=(None, 15), anchor='w', justify='left').grid(row=3, column=1, sticky="NSEW")
 
-        # if isAi == True:
-        #     # tk.Button(self.root, text='Rematch!', command=self.playAi, font=(None, 12), fg="blue").grid(row=4, column=1, sticky=tk.W)
-        # else:
-        tk.Button(self.root, text='Rematch!', command=self.play, font=(None, 12), fg="blue").grid(row=4, column=1, sticky=tk.W)
+        if isAi == True:
+            tk.Button(self.root, text='Rematch!', command=self.play_computer, font=(None, 12), fg="blue").grid(row=4, column=1, sticky=tk.W)
+        else:
+            tk.Button(self.root, text='Rematch!', command=self.play, font=(None, 12), fg="blue").grid(row=4, column=1, sticky=tk.W)
         
-        # tk.Button(self.root, text='Rematch with Swap!', command= lambda: self.swapPlayers(isAi), font=(None, 12), fg="red").grid(row=4, column=2, sticky=tk.W)
+        tk.Button(self.root, text='Rematch with Swap!', command= lambda: self.swapPlayers(isAi), font=(None, 12), fg="red").grid(row=4, column=2, sticky=tk.W)
 
         tk.Entry(self.root)
         self.root.mainloop()
@@ -240,6 +240,16 @@ class Connect4:
             index += 1
         return self.EMPTY
 
+    def swapPlayers(self, isAi):
+        """
+        In the event the players choose to swap pieces
+        """
+        self.player1.name, self.player2.name = self.player2.name, self.player1.name
+        if isAi == True:
+            self.play_computer()
+        else:
+            self.play()
+
     def reset(self):
         """
         Restoring the game in its original state
@@ -270,7 +280,7 @@ class Connect4:
         while not self.gameOver:
             self.display_board()
             if self.moveNumber % 2 == 0:
-                userText, userRect = self.display_player_name(self.player1.name, colors.blue)
+                userText, userRect = self.display_player_name(self.player1.name, colors.realBlue)
             elif self.moveNumber % 2 == 1:
                 userText, userRect = self.display_player_name(self.player2.name, colors.red)
             self.screen.blit(userText, userRect) 
@@ -294,7 +304,7 @@ class Connect4:
                                 self.scoreboard["ties"] = self.scoreboard.get("ties") + 1
                                 userText, userRect = self.display_player_name("It is a TIE!!!", colors.dark_gray)
             if self.moveNumber % 2 == computerPlayer and self.gameOver == False:
-                move = self.generate_move(self.board, 4, computerPlayer, humanPlayer, True, self.moveNumber)
+                move, minimax_score = self.generate_move(self.board, 4, computerPlayer, humanPlayer, True, self.moveNumber)
                 self.drop_piece_animation(move)
                 if self.who_won(self.board, computerPlayer):
                     self.gameOver = True
@@ -308,5 +318,5 @@ class Connect4:
         self.display_board()
         self.screen.blit(userText, userRect) 
         pygame.display.flip()
-        # self.display_scoreboard(True)
+        self.display_scoreboard(True)
     
