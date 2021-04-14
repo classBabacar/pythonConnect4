@@ -2,8 +2,6 @@ import pygame
 import colors
 import tkinter as tk
 import pygame_menu
-# import pandas as pd
-import random
 
 class Connect4:
     """
