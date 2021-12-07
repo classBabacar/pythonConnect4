@@ -29,24 +29,24 @@ class Minimax(Connect4):
                 return (None, self.get_game_score(board, computerPlayer, humanPlayer))
 
         if maximizingPlayer:
-            maxValue = -1000000
+            maxValue = -math.inf
             for move in range(0, self.COLUMNS):
                 tmpBoard = self.copyBoard(board)
                 if self.is_legal_move(move, tmpBoard):
                     self.drop_piece_computer(move, tmpBoard, moveNumber)
                     result = self.generate_move(tmpBoard, depth - 1, computerPlayer, humanPlayer, False, moveNumber + 1)[1]
-                    if float(result) >= float(maxValue):
+                    if float(result) > float(maxValue):
                         maxValue = result
                         bestMove = move
             return bestMove, maxValue
         else:
-            minValue = 1000000
+            minValue = math.inf
             for move in range(0,self.COLUMNS):
                 tmpBoard = self.copyBoard(board)
                 if self.is_legal_move(move, tmpBoard):
                     self.drop_piece_computer(move, tmpBoard, moveNumber)
                     result = self.generate_move(tmpBoard, depth - 1, computerPlayer, humanPlayer, True, moveNumber + 1)[1]
-                    if float(result) <= float(minValue):
+                    if float(result) < float(minValue):
                         minValue = result
                         bestMove = move
             return bestMove, minValue
